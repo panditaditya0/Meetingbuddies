@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Meeting Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #1c2129
+    }
+
+    .dashboard-row {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .table-container {
+      flex: 2;
+      border-radius: 8px;
+      background-color: #1f2e40;
+      border: 2px solid #1f2e40;
+      padding: 10px 20px;
+    }
+
+    .form-container {
+      flex: 1;
+    }
+
+    .chart-container {
+      flex: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+
+    td {
+      padding: 12px;
+      text-align: left;
+      color: #a4aeb6;
+      background-color: #1f2e40;
+    }
+
+    th {
+      padding: 12px;
+      text-align: left;
+      color: #a4aeb6;
+      background-color: #3d4a5c;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 15px;
+      background: #1f2e40;
+      color: #a4aeb6;
+      border-radius: 8px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    select,
+    input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      color: #a4aeb6;
+      background-color: #3d4a5c;
+    }
+
+    button {
+      padding: 10px;
+      background: #595ce6;
+      color: #d6dbdf;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    canvas {
+      max-width: 100%;
+    }
+
+    .top-bar {
+      border-radius: 40px;
+      background-color: #3d4a5c;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .top-bar h1 {
+      margin: 0;
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: #eee;
+    }
+
+    .user-settings-btn {
+      background-color: #595ce6;
+      /* Lighter accent */
+      color: #ddd;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 1rem;
+    }
+
+    .user-settings-btn:hover {
+      background-color: #2b3b57;
+      color: #fff;
+    }
+
+    .user-settings-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-bar">
+    <h1>Dashboard</h1>
+
+    <a th:if="${isAdmin}" th:href="@{/admin/users}" class="user-settings-btn" title="User Settings">
+      <!-- Simple gear icon SVG -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path
+          d="M19.14 12.936a7.975 7.975 0 0 0 0-1.872l2.036-1.58a.5.5 0 0 0 .12-.61l-1.928-3.34a.5.5 0 0 0-.6-.22l-2.4.96a7.93 7.93 0 0 0-1.62-.936l-.36-2.52A.5.5 0 0 0 14 2h-4a.5.5 0 0 0-.5.42l-.36 2.52a7.93 7.93 0 0 0-1.62.936l-2.4-.96a.5.5 0 0 0-.6.22l-1.928 3.34a.5.5 0 0 0 .12.61l2.036 1.58a7.975 7.975 0 0 0 0 1.872l-2.036 1.58a.5.5 0 0 0-.12.61l1.928 3.34a.5.5 0 0 0 .6.22l2.4-.96c.5.4 1.05.72 1.62.936l.36 2.52A.5.5 0 0 0 10 22h4a.5.5 0 0 0 .5-.42l.36-2.52a7.93 7.93 0 0 0 1.62-.936l2.4.96a.5.5 0 0 0 .6-.22l1.928-3.34a.5.5 0 0 0-.12-.61l-2.036-1.58zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" />
+      </svg>
+      User Settings
+    </a>
+  </div>
+
+  <div class="dashboard-row">
+
+    <!-- Table Section -->
+    <div class="table-container">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="color: white; margin: 0;">All Meetings</h2>
+        <button onclick="downloadTodaysMeetings()">DOWNLOAD TODAY'S DETAILS</button>
+      </div>
+      <table style="margin-top: 20px">
+        <thead style="background: #3d4a5c;">
+          <tr>
+            <th>#</th>
+            <th>Meet</th>
+            <th>Qty</th>
+            <th>Start Time</th>
+            <th>Timeout</th>
+            <th>Action</th>
+            <th>Analytics</th>
+          </tr>
+        </thead>
+        <tbody id="meetingsBody">
+          <tr>
+            <td>1</td>
+            <td>ZoomMeeting</td>
+            <td>15</td>
+            <td>10:00 AM</td>
+            <td>10:30 AM</td>
+            <td><button style="background-color: #106ed2;">Refill</button></td>
+
+          </tr>
+          <!-- Add more rows if needed -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-container">
+      <form id="meetingForm">
+        <label for="meetingId">Meeting ID:</label>
+        <input type="text" id="meetingId" value="">
+
+        <label for="passcode">Meeting Password:</label>
+        <input type="text" id="passcode" value="">
+
+        <label for="count">Bot Users Count</label>
+        <input type="number" id="count" value="">
+
+        <label for="locale">Name Locale</label>
+        <select id="locale">
+          <option value="en_IN">Indian</option>
+          <option value="en">US</option>
+        </select>
+
+        <label for="timeout">Timeout (in minutes) </label>
+        <input type="number" id="timeout" value="">
+
+        <label for="provider">VC Type</label>
+        <select id="provider">
+          <option value="ZoomMeeting">Zoom Meeting</option>
+          <option value="GoogleMeet">Google Meet</option>
+          <option value="JioMeet">JioMeet</option>
+        </select>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+          <button style="width: 90px;" type="submit">SUBMIT</button>
+          <button style="width: 90px; background-color: rgba(255, 0, 0, 0.788);" type="button"
+            onclick="document.getElementById('meetingForm').reset();">
+            CANCEL
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="myPieChart"></canvas>
+    </div>
+
+  </div>
+
+  <script>
+    function fetchTodaysTable() {
+      fetch('/api/meetings/today')
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.getElementById('meetingsBody');
+          tbody.innerHTML = '';
+
+          data.data.forEach((meeting, index) => {
+            const startTime = new Date(meeting.createdAt);
+            const endTime = new Date(startTime.getTime() + meeting.timeout * 60000);
+
+            const row = `
+         <tr>
+           <td>${index + 1}</td>
+           <td>${meeting.meetingId}</td>
+           <td>${meeting.botUsersCount}</td>
+           <td>${formatTime(startTime)}</td>
+           <td>${formatTime(endTime)}</td>
+           <td><button style="background-color: #106ed2;" onclick="refillMeeting(${meeting.id})" >Refill</button></td>
+           <td><button style="background-color: #106ed2; color: white;"  onclick="showAnalytics(${meeting.id})" >
+              <i class="fa-solid fa-chart-pie" style="margin-right: 5px;"></i>
+            </button></td>
+         </tr>
+       `;
+            tbody.insertAdjacentHTML('beforeend', row);
+          });
+        })
+        .catch(error => {
+          console.error("Failed to load meetings:", error);
+        });
+
+      function formatTime(date) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      fetchTodaysTable();
+    });
+
+
+    document.getElementById('meetingForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const data = {
+        meetingId: document.getElementById('meetingId').value,
+        passcode: document.getElementById('passcode').value,
+        botUsersCount: document.getElementById('count').value,
+        locale: document.getElementById('locale').value,
+        meetingProvider: document.getElementById('provider').value,
+        timeout: document.getElementById('timeout').value
+      };
+
+      if (!data.meetingId || !data.passcode || !data.botUsersCount || !data.locale || !data.meetingProvider || !data.timeout) {
+        alert('Please fill out all fields before submitting.');
+        return;
+      }
+
+      fetch('/api/join-meeting', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      })
+        .then(response => {
+          if (!response.ok) throw new Error('Network error');
+          return response.json();
+        })
+        .then(responseData => {
+          alert('Meeting submitted successfully!');
+          fetchTodaysTable();
+        })
+        .catch(error => {
+          console.error('Error submitting form:', error);
+          alert('Something went wrong.');
+        });
+    });
+
+
+    const ctx = document.getElementById('myPieChart').getContext('2d');
+    const pieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Joined', 'Pending', 'Failed'],
+        datasets: [{
+          label: 'Meeting Status',
+          data: [10, 3, 2],
+          backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+
+    function refillMeeting(meetingId) {
+      fetch(`/api/refill-meeting/${meetingId}`, {
+        method: 'GET'
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to refill meeting.');
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert('Refill successful: ' + data.msg);
+          fetchTodaysTable();
+
+        })
+        .catch(error => {
+          alert('Error: ' + error.msg);
+        });
+    }
+
+    function downloadTodaysMeetings() {
+      fetch('/api/export/today-meetings')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to download CSV");
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'today_meetings.csv';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        })
+        .catch(error => {
+          alert("Error downloading file: " + error.message);
+        });
+    }
+let analyticsInterval = null;
+
+    function showAnalytics(meetingId) {
+      if (analyticsInterval) {
+    clearInterval(analyticsInterval);
+    analyticsInterval = null;
+  }
+
+function fetchAnalytics() {
+    fetch(`/api/meetings/meeting/analytics/${meetingId}`)
+      .then(response => response.json())
+      .then(data => {
+        // Update pie chart
+        pieChart.data.datasets[0].data = [
+          data.data.joined,
+          data.data.pending,
+          data.data.failed
+        ];
+        pieChart.update();
+
+        // Stop polling if no pending users
+        if (data.data.pending === 0) {
+          clearInterval(analyticsInterval);
+          analyticsInterval = null;
+          console.log("Polling stopped: No pending participants.");
+        }
+      })
+      .catch(error => {
+        console.error("Failed to load meeting analytics:", error);
+      });
+  }
+
+  // Start polling every 5 seconds
+  fetchAnalytics(); // Call immediately once
+  analyticsInterval = setInterval(fetchAnalytics, 500);
+    }
+  </script>
+
+</body>
+
+</html>
