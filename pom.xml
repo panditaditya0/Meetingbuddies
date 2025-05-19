@@ -122,6 +122,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>meetingbuddy</finalName>
 	</build>
 
 </project>

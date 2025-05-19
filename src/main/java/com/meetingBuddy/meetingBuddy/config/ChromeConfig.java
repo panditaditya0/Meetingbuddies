@@ -28,7 +28,7 @@ public class ChromeConfig {
         options.addArguments("--disable-infobars");
         options.addArguments("--disable-popup-blocking");
         options.addArguments("--disable-notifications");
-        options.addArguments("--headless");
+        options.addArguments("--headless ");
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setBrowserName("chrome");
