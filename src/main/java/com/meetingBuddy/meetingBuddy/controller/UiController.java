@@ -33,6 +33,7 @@ public class UiController {
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("currentUser", optionalUser.get());
         return "dashboard";
     }
 }

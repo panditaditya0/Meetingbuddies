@@ -29,7 +29,8 @@ public class MeetingController {
 
     @CrossOrigin
     @PostMapping("/join-meeting")
-    public ResponseEntity<ResponseDto> joinBotsToMeeting(@AuthenticationPrincipal UserDetails userDetails, @RequestBody Meetings meetingInfo) {
+    public ResponseEntity<ResponseDto> joinBotsToMeeting(@AuthenticationPrincipal UserDetails userDetails,
+                                                         @RequestBody Meetings meetingInfo) {
         try {
             Object joinedMeetingInfo = this.meetingService
                     .joinAMeeting(meetingInfo);
@@ -52,10 +53,10 @@ public class MeetingController {
     }
 
     @CrossOrigin
-    @GetMapping("/meetings/today")
-    public ResponseEntity<ResponseDto> todaysMeeting() {
+    @GetMapping("/meetings/today/{username}")
+    public ResponseEntity<ResponseDto> todaysMeeting(@PathVariable String username) {
         try {
-            List<Meetings> meetingsList = meetingService.todaysMeeting();
+            List<Meetings> meetingsList = meetingService.todaysMeeting(username.trim());
             return new ResponseEntity<>(new ResponseDto(true, meetingsList, ""), HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>(new ResponseDto(false, "", ex.getMessage()), HttpStatus.BAD_REQUEST);
@@ -73,9 +74,9 @@ public class MeetingController {
         }
     }
 
-    @GetMapping("/export/today-meetings")
-    public ResponseEntity<byte[]> exportTodayMeetingsAsCsv() {
-        List<Meetings> meetings = meetingService.todaysMeeting();
+    @GetMapping("/export/today-meetings/{username}")
+    public ResponseEntity<byte[]> exportTodayMeetingsAsCsv(@PathVariable String username) {
+        List<Meetings> meetings = meetingService.todaysMeeting(username.trim());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintWriter writer = new PrintWriter(out);
 

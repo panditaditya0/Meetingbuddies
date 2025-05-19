@@ -26,4 +26,5 @@ public class Meetings {
     private String locale;
     private Long joinedBots;
     private Long failedBots;
+    private String createdBy;
 }

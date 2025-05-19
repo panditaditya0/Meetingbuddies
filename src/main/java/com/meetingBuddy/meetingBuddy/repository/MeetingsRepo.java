@@ -11,8 +11,5 @@ import java.util.List;
 
 @Repository
 public interface MeetingsRepo extends JpaRepository<Meetings, Long> {
-
-    @Query("SELECT m FROM Meetings m WHERE m.createdAt >= :start AND m.createdAt < :end")
-    List<Meetings> findMeetingsCreatedToday(@Param("start") LocalDateTime start,
-                                           @Param("end") LocalDateTime end);
+    List<Meetings> findAllByCreatedBy(String username);
 }

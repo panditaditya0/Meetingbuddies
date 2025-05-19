@@ -30,9 +30,9 @@ public class MeetingService {
         meetingInfo.setCreatedAt(LocalDateTime.now());
         meetingInfo.setJoinedBots(0L);
         meetingInfo.setFailedBots(0L);
-        Meetings temp = meetingsRepo.save(meetingInfo);
+        meetingsRepo.save(meetingInfo);
         for (String name : names) {
-            meetingType.joinMeeting(meetingInfo, name);
+//            meetingType.joinMeeting(meetingInfo, name);
         }
         return true;
     }
@@ -59,8 +59,8 @@ public class MeetingService {
         return true;
     }
 
-    public List<Meetings> todaysMeeting() {
-        List<Meetings> allMeetings = meetingsRepo.findAll();
+    public List<Meetings> todaysMeeting(String username) {
+        List<Meetings> allMeetings = meetingsRepo.findAllByCreatedBy(username);
         LocalDate today = LocalDate.now();
         return allMeetings.stream()
                 .filter(meeting -> meeting.getCreatedAt().toLocalDate().isEqual(today))

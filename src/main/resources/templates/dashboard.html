@@ -156,20 +156,31 @@
 <body>
   <div class="top-bar">
     <h1>Dashboard</h1>
+    <div class="user-info">
+      <span id="currentUsername" style="color: white;" th:text="'Logged in as: ' + ${currentUser.username}"></span>
+    </div>
 
+  <div style="display: flex">
     <a th:if="${isAdmin}" th:href="@{/admin/users}" class="user-settings-btn" title="User Settings">
-      <!-- Simple gear icon SVG -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path
           d="M19.14 12.936a7.975 7.975 0 0 0 0-1.872l2.036-1.58a.5.5 0 0 0 .12-.61l-1.928-3.34a.5.5 0 0 0-.6-.22l-2.4.96a7.93 7.93 0 0 0-1.62-.936l-.36-2.52A.5.5 0 0 0 14 2h-4a.5.5 0 0 0-.5.42l-.36 2.52a7.93 7.93 0 0 0-1.62.936l-2.4-.96a.5.5 0 0 0-.6.22l-1.928 3.34a.5.5 0 0 0 .12.61l2.036 1.58a7.975 7.975 0 0 0 0 1.872l-2.036 1.58a.5.5 0 0 0-.12.61l1.928 3.34a.5.5 0 0 0 .6.22l2.4-.96c.5.4 1.05.72 1.62.936l.36 2.52A.5.5 0 0 0 10 22h4a.5.5 0 0 0 .5-.42l.36-2.52a7.93 7.93 0 0 0 1.62-.936l2.4.96a.5.5 0 0 0 .6-.22l1.928-3.34a.5.5 0 0 0-.12-.61l-2.036-1.58zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" />
       </svg>
       User Settings
     </a>
+
+    <a th:href="@{/logout}"  class="user-settings-btn" style="background-color: rgba(255, 0, 0, 0.788);margin-left: 40px;" title="Logout">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+        <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/>
+      </svg>
+      Logout
+    </a>
+  </div>
+
   </div>
 
   <div class="dashboard-row">
 
-    <!-- Table Section -->
     <div class="table-container">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h2 style="color: white; margin: 0;">All Meetings</h2>
@@ -197,12 +208,10 @@
             <td><button style="background-color: #106ed2;">Refill</button></td>
 
           </tr>
-          <!-- Add more rows if needed -->
         </tbody>
       </table>
     </div>
 
-    <!-- Form Section -->
     <div class="form-container">
       <form id="meetingForm">
         <label for="meetingId">Meeting ID:</label>
@@ -226,8 +235,8 @@
         <label for="provider">VC Type</label>
         <select id="provider">
           <option value="ZoomMeeting">Zoom Meeting</option>
-          <option value="GoogleMeet">Google Meet</option>
-          <option value="JioMeet">JioMeet</option>
+          <option value="GoogleMeet" disabled>Google Meet</option>
+          <option value="JioMeet" disabled>JioMeet</option>
         </select>
 
         <div style="display: flex; justify-content: space-between; margin-top: 10px;">
@@ -249,7 +258,8 @@
 
   <script>
     function fetchTodaysTable() {
-      fetch('/api/meetings/today')
+      let username = document.getElementById("currentUsername").textContent.split(":")[1].trim();
+      fetch(`/api/meetings/today/${username}`)
         .then(response => response.json())
         .then(data => {
           const tbody = document.getElementById('meetingsBody');
@@ -298,7 +308,8 @@
         botUsersCount: document.getElementById('count').value,
         locale: document.getElementById('locale').value,
         meetingProvider: document.getElementById('provider').value,
-        timeout: document.getElementById('timeout').value
+        timeout: document.getElementById('timeout').value,
+        createdBy: document.getElementById("currentUsername").textContent.split(":")[1].trim()
       };
 
       if (!data.meetingId || !data.passcode || !data.botUsersCount || !data.locale || !data.meetingProvider || !data.timeout) {
@@ -371,7 +382,8 @@
     }
 
     function downloadTodaysMeetings() {
-      fetch('/api/export/today-meetings')
+      let username = document.getElementById("currentUsername").textContent.split(":")[1].trim();
+      fetch(`/api/export/today-meetings/${username}`)
         .then(response => {
           if (!response.ok) {
             throw new Error("Failed to download CSV");
