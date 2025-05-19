@@ -32,7 +32,7 @@ public class MeetingService {
         meetingInfo.setFailedBots(0L);
         meetingsRepo.save(meetingInfo);
         for (String name : names) {
-//            meetingType.joinMeeting(meetingInfo, name);
+            meetingType.joinMeeting(meetingInfo, name);
         }
         return true;
     }
