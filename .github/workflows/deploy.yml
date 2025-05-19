@@ -20,6 +20,8 @@ jobs:
       - name: Build and push to dockerhub
         uses: docker/build-push-action@v5
         with:
-          context:
+          context: .
           push: true
-          tags: adpndt/meeting-buddy:$(git rev-parse --short HEAD)
+          tags: |
+            adpndt/meeting-buddy:latest
+            adpndt/meeting-buddy:${{ github.ref_name }}
