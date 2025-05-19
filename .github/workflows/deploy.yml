@@ -12,6 +12,11 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build and package project
         run: |
           rev=$(git rev-parse --short HEAD)
@@ -20,15 +25,4 @@ jobs:
           mvn clean package -DskipTests
           sudo docker build --build-arg GIT_COMMIT=${rev} -t meeting-buddy/t:latest -f Dockerfile .
           sudo docker image tag meeting-buddy/t adpndt/meeting-buddy-service:${rev}
-  login:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: PUSH
-        run: |
           sudo docker push adpndt/meeting-buddy:${rev}
