@@ -13,6 +13,9 @@ jobs:
         with:
           java-version: 17
       - name: Build and package project
+        env:
+          NEXUS_USER: ${{ secrets.NEXUS_USER }}
+          NEXUS_PWD: ${{ secrets.NEXUS_PWD }}
         run: |
           rev=$(git rev-parse --short HEAD)
           echo "rev  ${rev}"
@@ -20,5 +23,5 @@ jobs:
           mvn clean package -DskipTests
           sudo docker build --build-arg GIT_COMMIT=${rev} -t meetingbuddies/t:latest -f Dockerfile .
           sudo docker image tag meetingbuddies/t nexus.ppustage.dev/meetingbuddiess-service:${rev}
-          sudo docker login -u docker-psl -p 1q2w3e nexus.ppustage.dev
+          sudo docker login -u $NEXUS_USER -p $NEXUS_PWD nexus.ppustage.dev
           sudo docker push nexus.ppustage.dev/meetingbuddiess-service:${rev}
