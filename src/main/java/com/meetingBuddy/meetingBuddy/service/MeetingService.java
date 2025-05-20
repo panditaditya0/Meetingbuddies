@@ -50,7 +50,6 @@ public class MeetingService {
     }
 
     public Object refillMeeting(Long id) {
-        System.out.println("test");
         Optional<Meetings> meetingsOpt = meetingsRepo.findById(id);
         if (meetingsOpt.isEmpty()){
             return false;
