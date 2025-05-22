@@ -55,24 +55,23 @@ We will use the official Selenium Docker images:
           - DB_DLL=update
           - SHOW_SQL=false
           - SELENIUM_GRID_URL=http://selenium-hub:4444/wd/hub
-bash
+```
 ### 2. Doploy docker file
 
 ```bash
 docker-compose up -d
-bash
-
+```
 ### 3. Go to login page
 
 ```bash
 http://localhost:8082/login
-bash
+```
 
 ### 4. Login creds
 ```bash
 username -> admin
 password -> admin123
-bash
+```
 
 
 
