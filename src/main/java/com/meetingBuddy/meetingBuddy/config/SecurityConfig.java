@@ -56,7 +56,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:8082") // your frontend origin
+                        .allowedOrigins("https://meeting.zapto.org") // your frontend origin
                         .allowCredentials(true)
                         .allowedMethods("GET", "POST", "PUT", "DELETE");
             }
