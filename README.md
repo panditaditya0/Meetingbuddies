@@ -15,6 +15,16 @@ We will use the official Selenium Docker images:
 - [`selenium/node-chrome`](https://hub.docker.com/r/selenium/node-chrome): Node image that connects Chrome to the Grid.
 
 ---
+## Screen shots
+<p float="left">
+  <img src="./images/login.png" width="45%" />
+  <img src="./images/dashboard.png" width="45%" />
+</p>
+
+<p float="left">
+  <img src="./images/dashboard_bots_added.png" width="45%" />
+  <img src="./images/create_new_users.png" width="45%" />
+</p>
 
 ## 🚀 Quick Start
 
